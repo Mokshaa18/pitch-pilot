@@ -5,10 +5,15 @@
     },
 
     "pitches" : [
-        {"[pitch_mm": 1.875, "pixels_w": 320, "pixels_h": 180},
+        {"pitch_mm": 1.875, "pixels_w": 320, "pixels_h": 180},
         {"pitch_mm": 1.5625, "pixels_w": 384, "pixels_h": 216},
         {"pitch_mm": 1.25, "pixels_w": 480, "pixels_h": 270},
         {"pitch_mm": 0.9375, "pixels_w": 640, "pixels_h": 360},
         {"pitch_mm": 0.625, "pixels_w": 960, "pixels_h": 540}
-    ]
+    ],
+
+    "viewing_distance_rule": {
+        "max_pitch_mm_per_metre": 1.0,
+        "description": "Largest acceptable pitch in mm = closest viewing distance in metres x this factor."
+    }
 }
