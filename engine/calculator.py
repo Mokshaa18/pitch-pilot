@@ -4,7 +4,7 @@ from engine.specs import load_specs
 
 SPECS = load_specs()
 MM_PER_INCH = 25.4
-EPSILON = 1E-9
+EPSILON = 1e-9                                                     
 
 def _pitch_entry(pitch_mm, specs = SPECS):
     for entry in specs["pitches"]:
@@ -67,7 +67,7 @@ def describe_grid(cols, rows, specs=SPECS):
     width_mm, height_mm = screen_size_mm(cols, rows, specs)
     return {
         "grid" : {"cols" : cols, "rows" : rows, "cabinets" : cols * rows},
-        "Size_mm" : {"width" : width_mm, "height" : height_mm},
+        "size_mm" : {"width" : width_mm, "height" : height_mm},
         "area_m2" : area_m2(cols, rows, specs),
         "diagonal_inches" : diagonal_inches(cols, rows, specs),
     }
@@ -92,7 +92,7 @@ def recommend_screen(width_m, height_m, viewing_distance_m = None, specs = SPECS
             result["options"].append(
                 {"pitch_mm": pitch, "resolution": {"width": res_w, "height": res_h}}
             )
-            return result
+        return result
 
 
 def options_for_resolution(target_width_px, target_height_px, viewing_distance_m = None, specs = SPECS):
