@@ -1,2 +1,6 @@
 pytest
 jsonschema
+openai
+httpx
+python-dotenv
+streamlit

@@ -77,3 +77,11 @@ def test_missing_required_argument():
 def test_unexpected_argument():
     text, is_error = run_tool("recommend_screen", '{"width_m": 6, "height_m": 3.4, "colour": "red"}')
     assert is_error
+
+
+def test_null_viewing_distance_means_not_given():
+    text, is_error = run_tool(
+        "recommend_screen", '{"width_m": 3.4, "height_m": 4, "viewing_distance_m": null}'
+    )
+    assert not is_error
+    assert len(json.loads(text)["options"]) == 5
