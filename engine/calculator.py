@@ -86,13 +86,13 @@ def recommend_screen(width_m, height_m, viewing_distance_m = None, specs = SPECS
     if viewing_distance_m is not None:
         result["max_pitch_mm"] = max_pitch_for_distance(viewing_distance_m, specs)
 
-        result["options"] = []
-        for pitch in allowed_pitches(viewing_distance_m, specs):
-            res_w, res_h = resolution(cols, rows, pitch, specs)
-            result["options"].append(
-                {"pitch_mm": pitch, "resolution": {"width": res_w, "height": res_h}}
-            )
-        return result
+    result["options"] = []
+    for pitch in allowed_pitches(viewing_distance_m, specs):
+        res_w, res_h = resolution(cols, rows, pitch, specs)
+        result["options"].append(
+            {"pitch_mm": pitch, "resolution": {"width": res_w, "height": res_h}}
+        )
+    return result
 
 
 def options_for_resolution(target_width_px, target_height_px, viewing_distance_m = None, specs = SPECS):
