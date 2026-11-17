@@ -57,6 +57,7 @@ Answering:
 
 MAX_TOOL_ROUNDS = 5
 COOLDOWN_SECONDS = 60
+MAX_HISTORY_TURNS = 3
 FALLBACK_ERRORS = (RateLimitError, APIConnectionError, InternalServerError)
 STANDARD_FIELDS = {"role", "content", "tool_calls", "tool_call_id"}
 
@@ -121,6 +122,13 @@ def standard_only(messages : list[dict[str, Any]]) -> list[dict[str, Any]]:
         cleaned.append(copy)
     return cleaned
 
+
+def recent_turns(messages: list[dict[str, Any]], max_turns: int = MAX_HISTORY_TURNS) -> list[dict[str, Any]]:
+    """The last `max_turns` user questions and everything after them."""
+    user_positions = [i for i, m in enumerate(messages) if m.get("role") == "user"]
+    if len(user_positions) <= max_turns:
+        return messages
+    return messages[user_positions[-max_turns]:]
 
 class Agent:
     def __init__(self, providers: list[Provider], verbose: bool = False):

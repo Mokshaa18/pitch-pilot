@@ -108,4 +108,4 @@ def run_tool(name: str, arguments_json: str) -> tuple[str, bool]:
     except (ValueError, TypeError) as error:
         return str(error), True
 
-    return json.dumps(result), False
+    return json.dumps(result, separators = (",", ":")), False
