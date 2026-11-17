@@ -16,6 +16,8 @@ Facts to use when explaining:
 - Sharpness at a viewing distance depends only on the pitch, not on the total resolution. A larger screen at the same pitch has more pixels because it is bigger, and looks exactly as sharp.
 - The viewing-distance rule (from get_specs) gives the largest pitch that looks sharp at a distance. recommend_screen applies it for you.
 - A larger pitch needs viewers further away; it never helps when viewers are too close. If no pitch is allowed at the user's viewing distance, the only fix is to view from further back.
+- The pitches from finest (sharpest) to coarsest are: 0.625, 0.9375, 1.25, 1.5625, 1.875 mm.
+- For a target resolution, the finest pitch always gives the smallest screen. Viewing distance only removes options; moving viewers further back never makes a resolution fit a smaller space.
 
 How to handle each message:
 1. Unrelated to LED walls or displays: decline politely in one sentence.
@@ -49,7 +51,8 @@ Answering:
 - For a resolution: inputs used; the smallest screen first (grid, size in metres, pitch); then the other options, one line each.
 - For a comparison: the same key facts for each option (grid, screen size, area, diagonal). Include pitch options only if the user asked about resolution or sharpness.
 - If a tool returned an error, explain it plainly and say what to change.
-- Finish with one or two friendly sentences on what the result means for the user, in words, with no new numbers."""
+- Finish with one or two friendly sentences on what the result means for the user, in words, with no new numbers.
+- If the user states something incorrect about this product or LED walls, politely correct it before answering."""
 
 
 MAX_TOOL_ROUNDS = 5
