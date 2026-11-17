@@ -87,7 +87,7 @@ def test_fit_wall_basic():
 
 def test_fit_wall_rounds_down_partial_cabinets():
     #6350 / 600 = 10.58 -> 10 cols
-    assert fit_wall(0.6, 0.3375) == (1, 1)
+    assert fit_wall(6.35, 3.4) == (10, 10)
 
 
 def test_fit_wall_exact_one_cabinet():
@@ -114,7 +114,7 @@ def test_close_viewing_allows_only_fine_pitches():
     assert allowed_pitches(1) == [0.9375, 0.625]
 
 
-def test_too_case_allows_none():
+def test_too_close_allows_none():
     assert allowed_pitches(0.5) == []
 
 
@@ -176,3 +176,26 @@ def test_options_for_resolution_reports_total_pixels():
     smallest = options[0]
     assert smallest["total_pixels"] == 8_294_400
     assert isinstance(smallest["total_pixels"], int)
+
+
+def test_8k_does_not_fit_a_4_by_2_5_wall_at_0_8m():
+    with pytest.raises(ValueError, match="smallest screen that reaches it is 4.8 x 2.7 m"):
+        options_for_resolution(7680, 4320, viewing_distance_m=0.8, max_width_m=4, max_height_m=2.5)
+
+
+def test_recommend_screen_without_distance_lists_all_pitches():
+    result = recommend_screen(3.4, 4)
+    assert result["grid"] == {"cols": 5, "rows": 11, "cabinets": 55}
+    assert "max_pitch_mm" not in result
+    assert len(result["options"]) == 5
+
+
+def test_4k_fits_a_large_wall():
+    options = options_for_resolution(3840, 2160, max_width_m=6, max_height_m=3.4)
+    assert options[0]["pitch_mm"] == 0.625
+    assert options[0]["fits_space"] is True
+
+
+def test_no_space_means_no_fits_flag():
+    options = options_for_resolution(3840, 2160)
+    assert "fits_space" not in options[0]

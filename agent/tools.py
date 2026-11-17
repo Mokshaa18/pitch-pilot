@@ -33,14 +33,17 @@ TOOLS: list[dict[str, Any]] = [
             },
         },
     },
-    {
+        {
         "type": "function",
         "function": {
             "name": "options_for_resolution",
             "description": (
                 "For a target resolution, list the smallest cabinet grid that reaches it at each "
                 "allowed pixel pitch, smallest screen first. Use this when the user asks how to "
-                "get a resolution. Full HD = 1920x1080, 4K = 3840x2160, 8K = 7680x4320."
+                "get a resolution. Full HD = 1920x1080, 4K = 3840x2160, 8K = 7680x4320. "
+                "IMPORTANT: if the user mentioned the size of their wall or space anywhere in the "
+                "conversation, ALWAYS pass it as max_width_m and max_height_m. If no option fits "
+                "that space, this tool returns an error saying so."
             ),
             "parameters": {
                 "type": "object",
@@ -52,16 +55,15 @@ TOOLS: list[dict[str, Any]] = [
                         "description": (
                             "Closest viewing distance in metres. Use only if the user stated it. "
                             "If they did not, omit this field or set it to null; never guess a value."
-                            "If the user also gave the size of their space, pass it as max_width_m and max_height_m."
-                        )
+                        ),
                     },
                     "max_width_m": {
                         "type": ["number", "null"],
-                        "description": "Width of the user's space in metres, if they gave one. Each option is then marked fits_space true or false.",
+                        "description": "Width of the user's wall or space in metres. Required whenever the user gave one.",
                     },
                     "max_height_m": {
                         "type": ["number", "null"],
-                        "description": "Height of the user's space in metres, if they gave one.",
+                        "description": "Height of the user's wall or space in metres. Required whenever the user gave one.",
                     },
                 },
                 "required": ["target_width_px", "target_height_px"],

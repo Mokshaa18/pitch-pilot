@@ -98,6 +98,16 @@ def recommend_screen(width_m, height_m, viewing_distance_m = None, specs = SPECS
     return result
 
 
+def _space_text(max_width_m, max_height_m):
+    """Describe the user's space, e.g. '4 m wide and 2.5 m high'."""
+    parts = []
+    if max_width_m is not None:
+        parts.append(f"{max_width_m:g} m wide")
+    if max_height_m is not None:
+        parts.append(f"{max_height_m:g} m high")
+    return " and ".join(parts)
+
+
 def options_for_resolution(target_width_px, target_height_px, viewing_distance_m = None, max_width_m = None, max_height_m = None, specs = SPECS):
     if target_width_px <= 0 or target_height_px <= 0:
         raise ValueError("Target resolution must be positive.")
@@ -118,6 +128,15 @@ def options_for_resolution(target_width_px, target_height_px, viewing_distance_m
             width_ok = max_width_m is None or option["size_mm"]["width"] <= max_width_m * 1000 + EPSILON
             height_ok = max_height_m is None or option["size_mm"]["height"] <= max_height_m * 1000 + EPSILON
             option["fits_space"] = width_ok and height_ok
+
+        if options and not any(option["fits_space"] for option in options):
+            smallest = options[0]["size_mm"]
+            raise ValueError(
+                f"No configuration reaches {target_width_px} x {target_height_px} pixels "
+                f"in a space {_space_text(max_width_m, max_height_m)}. "
+                f"The smallest screen that reaches it is "
+                f"{smallest['width'] / 1000:g} x {smallest['height'] / 1000:g} m."
+            )
     return sorted(options, key = lambda option: option["area_m2"])
 
 
