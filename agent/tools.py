@@ -52,7 +52,16 @@ TOOLS: list[dict[str, Any]] = [
                         "description": (
                             "Closest viewing distance in metres. Use only if the user stated it. "
                             "If they did not, omit this field or set it to null; never guess a value."
+                            "If the user also gave the size of their space, pass it as max_width_m and max_height_m."
                         )
+                    },
+                    "max_width_m": {
+                        "type": ["number", "null"],
+                        "description": "Width of the user's space in metres, if they gave one. Each option is then marked fits_space true or false.",
+                    },
+                    "max_height_m": {
+                        "type": ["number", "null"],
+                        "description": "Height of the user's space in metres, if they gave one.",
                     },
                 },
                 "required": ["target_width_px", "target_height_px"],
