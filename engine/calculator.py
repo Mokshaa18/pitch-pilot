@@ -89,13 +89,16 @@ def recommend_screen(width_m, height_m, viewing_distance_m = None, specs = SPECS
     result["options"] = []
     for pitch in allowed_pitches(viewing_distance_m, specs):
         res_w, res_h = resolution(cols, rows, pitch, specs)
-        result["options"].append(
-            {"pitch_mm": pitch, "resolution": {"width": res_w, "height": res_h}}
+        result["options"].append({
+            "pitch_mm": pitch, 
+            "resolution": {"width": res_w, "height": res_h},
+            "total_pixels": res_w * res_h, 
+             }
         )
     return result
 
 
-def options_for_resolution(target_width_px, target_height_px, viewing_distance_m = None, specs = SPECS):
+def options_for_resolution(target_width_px, target_height_px, viewing_distance_m = None, max_width_m = None, max_height_m = None, specs = SPECS):
     if target_width_px <= 0 or target_height_px <= 0:
         raise ValueError("Target resolution must be positive.")
     options = []
@@ -107,7 +110,14 @@ def options_for_resolution(target_width_px, target_height_px, viewing_distance_m
         res_w, res_h = resolution(cols, rows, pitch, specs)
         option["pitch_mm"] = pitch
         option["resolution"] = {"width": res_w, "height": res_h}
+        option["total_pixels"] = res_w * res_h
         options.append(option)
+
+    if max_width_m is not None or max_height_m is not None:
+        for option in options:
+            width_ok = max_width_m is None or option["size_mm"]["width"] <= max_width_m * 1000 + EPSILON
+            height_ok = max_height_m is None or option["size_mm"]["height"] <= max_height_m * 1000 + EPSILON
+            option["fits_space"] = width_ok and height_ok
     return sorted(options, key = lambda option: option["area_m2"])
 
 

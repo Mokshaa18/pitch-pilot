@@ -144,7 +144,7 @@ def test_recommend_screen_6_by_3_4_at_3m():
     assert result["leftover_mm"] == {"width": 0.0, "height": 25.0}
     assert result["max_pitch_mm"] == 3.0
     assert len(result["options"]) == 5
-    assert{"pitch_mm": 1.5625, "resolution": {"width": 3840, "height": 2160}} in result["options"]
+    assert{"pitch_mm": 1.5625, "resolution": {"width": 3840, "height": 2160}, "total_pixels": 8_294_400} in result["options"]
 
 
 def test_options_for_4k_at_1m():
@@ -162,3 +162,17 @@ def test_options_for_4k_match_table():
 def test_options_reject_invalid_target():
     with pytest.raises(ValueError):
         options_for_resolution(0, 2160)
+
+
+def test_total_pixels_at_1_25mm():
+    result = recommend_screen(6, 3.4)
+    option = next(o for o in result["options"] if o["pitch_mm"] == 1.25)
+    assert option["resolution"] == {"width": 4800, "height": 2700}
+    assert option["total_pixels"] == 12_960_000
+
+
+def test_options_for_resolution_reports_total_pixels():
+    options = options_for_resolution(3840, 2160)
+    smallest = options[0]
+    assert smallest["total_pixels"] == 8_294_400
+    assert isinstance(smallest["total_pixels"], int)
