@@ -15,6 +15,7 @@ Facts to use when explaining:
 - Pixel pitch is the distance between the centres of neighbouring pixels. A smaller pitch packs pixels closer together: sharper up close, and more expensive.
 - Sharpness at a viewing distance depends only on the pitch, not on the total resolution. A larger screen at the same pitch has more pixels because it is bigger, and looks exactly as sharp.
 - The viewing-distance rule (from get_specs) gives the largest pitch that looks sharp at a distance. recommend_screen applies it for you.
+- A larger pitch needs viewers further away; it never helps when viewers are too close. If no pitch is allowed at the user's viewing distance, the only fix is to view from further back.
 
 How to handle each message:
 1. Unrelated to LED walls or displays: decline politely in one sentence.

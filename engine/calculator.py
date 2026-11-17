@@ -123,6 +123,8 @@ def options_for_resolution(target_width_px, target_height_px, viewing_distance_m
         option["total_pixels"] = res_w * res_h
         options.append(option)
 
+    options.sort(key = lambda option: option["area_m2"])
+
     if max_width_m is not None or max_height_m is not None:
         for option in options:
             width_ok = max_width_m is None or option["size_mm"]["width"] <= max_width_m * 1000 + EPSILON
@@ -131,11 +133,19 @@ def options_for_resolution(target_width_px, target_height_px, viewing_distance_m
 
         if options and not any(option["fits_space"] for option in options):
             smallest = options[0]["size_mm"]
+            need_w = smallest["width"] / 1000
+            need_h = smallest["height"] / 1000
+            shortfall = []
+            if max_width_m is not None and need_w > max_width_m + EPSILON:
+                shortfall.append(f"{round(need_w - max_width_m, 3):g} m wider")
+            if max_height_m is not None and need_h > max_height_m + EPSILON:
+                shortfall.append(f"{round(need_h - max_height_m, 3):g} m taller")
+                
             raise ValueError(
                 f"No configuration reaches {target_width_px} x {target_height_px} pixels "
                 f"in a space {_space_text(max_width_m, max_height_m)}. "
-                f"The smallest screen that reaches it is "
-                f"{smallest['width'] / 1000:g} x {smallest['height'] / 1000:g} m."
+                f"The smallest screen that reaches it is {need_w:g} x {need_h:g} m, "
+                f"so the space would need to be {' and '.join(shortfall)}."
             )
     return sorted(options, key = lambda option: option["area_m2"])
 

@@ -179,8 +179,9 @@ def test_options_for_resolution_reports_total_pixels():
 
 
 def test_8k_does_not_fit_a_4_by_2_5_wall_at_0_8m():
-    with pytest.raises(ValueError, match="smallest screen that reaches it is 4.8 x 2.7 m"):
+    with pytest.raises(ValueError, match="smallest screen that reaches it is 4.8 x 2.7 m") as error:
         options_for_resolution(7680, 4320, viewing_distance_m=0.8, max_width_m=4, max_height_m=2.5)
+    assert "0.8 m wider and 0.2 m taller" in str(error.value)
 
 
 def test_recommend_screen_without_distance_lists_all_pitches():
