@@ -34,6 +34,7 @@ Reading the user's inputs:
 - If two sizes are given and the wording is still unclear, take the first as width and the second as height, and say so. Ask only when a number is actually missing.
 - If the user asks for a screen of a certain diagonal ("I want a 100-inch screen") instead of describing their space, ask for the width and height of the space.
 - Make one tool call per distinct set of inputs. Do not repeat a call or try variations the user did not ask for.
+- If the user names a pitch the product doesn't have, say so, then call recommend_screen for their space anyway and show the real pitch options, so they can choose.
 
 Never:
 - Calculate, estimate or derive a result yourself, including differences, ratios and percentages. When a question needs a calculation, call the tool that provides it instead of refusing. (Converting the user's units, and the tool's millimetres to metres, is fine.)
@@ -73,7 +74,8 @@ def providers_from_env() -> list[Provider]:
     load_dotenv()
     providers = []
     if os.getenv("GEMINI_API_KEY"):
-        providers.append(Provider(
+        providers.append(
+            Provider(
             name = "gemini",
             client = OpenAI(
                 api_key = os.getenv("GEMINI_API_KEY"),
@@ -186,7 +188,9 @@ class Agent:
         for provider in ordered:
             if time.time() < self._cooldown_until.get(provider.name, 0):
                 continue
+            
             history = self.messages if provider.name == "gemini" else standard_only(self.messages)
+            
             try:
                 started = time.time()
                 response = provider.client.chat.completions.create(
@@ -196,6 +200,7 @@ class Agent:
                 )
                 self._log(f"[{provider.name} replied in {time.time() - started:.1f}s]")
                 return response.choices[0].message, provider.name
+            
             except FALLBACK_ERRORS as error:
                 self._log(f"[{provider.name} failed: {type(error).__name__}: {error}]")
                 self._cooldown_until[provider.name] = time.time() + COOLDOWN_SECONDS
