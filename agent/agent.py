@@ -188,8 +188,9 @@ class Agent:
         for provider in ordered:
             if time.time() < self._cooldown_until.get(provider.name, 0):
                 continue
-            
-            history = self.messages if provider.name == "gemini" else standard_only(self.messages)
+
+            recent = recent_turns(self.messages)
+            history = recent if provider.name == "gemini" else standard_only(recent)
             
             try:
                 started = time.time()
@@ -198,13 +199,19 @@ class Agent:
                     messages=[{"role": "system", "content": SYSTEM_PROMPT}] + history,
                     tools=TOOLS,
                 )
-                self._log(f"[{provider.name} replied in {time.time() - started:.1f}s]")
+                usage = getattr(response, "usage", None)
+                tokens = f", {usage.prompt_tokens} in / {usage.completion_tokens} out" if usage else ""
+                self._log(f"[{provider.name} replied in {time.time() - started:.1f}s{tokens}] ")
                 return response.choices[0].message, provider.name
             
             except FALLBACK_ERRORS as error:
                 self._log(f"[{provider.name} failed: {type(error).__name__}: {error}]")
                 self._cooldown_until[provider.name] = time.time() + COOLDOWN_SECONDS
                 last_error = error
+        if last_error is None and self.providers:
+            soonest = min(self.providers, key=lambda p: self._cooldown_until.get(p.name, 0))
+            self._cooldown_until.pop(soonest.name, None)
+            return self._complete(prefer = soonest.name)
         raise RuntimeError(f"All providers are unavailable right now. Last error: {last_error}")
 
     def _log(self, text: str) -> None:

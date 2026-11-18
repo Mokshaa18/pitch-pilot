@@ -144,3 +144,15 @@ def test_recent_turns_keeps_last_questions_and_their_tool_calls():
     kept = recent_turns(messages, max_turns=1)
     assert kept[0] == {"role": "user", "content": "q2"}
     assert len(kept) == 4
+
+
+def test_only_recent_turns_are_sent():
+    client = FakeClient([FakeMessage(content=f"a{i}") for i in range(5)])
+    agent = Agent([Provider("gemini", client, "m")])
+
+    for i in range(5):
+        agent.ask(f"q{i}")
+
+    sent = client.requests[-1]["messages"]
+    questions_sent = [m["content"] for m in sent if m.get("role") == "user"]
+    assert questions_sent == ["q2", "q3", "q4"]
